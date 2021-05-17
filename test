@@ -11,7 +11,7 @@
         <script>
             function changePoints(n) {
                 var pointsEl = document.getElementbyId("points");
-                pointsEl.innerHTML = parseInt(pointsEl) + n;
+                pointsEl.innerHTML = parseInt(pointsEl.value) + n;
             }
         </script>
     </body>

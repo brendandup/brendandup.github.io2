@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>test</title>
+    </head>
+    <body>
+        <p><button onclick="changePoints(1)">+1</button></p>
+        <p id="points">0</p>
+       
+        <script>
+            function changePoints(n) {
+                var pointsEl = document.getElementbyId("points");
+                pointsEl.innerHTML = parseInt(pointsEl) + n;
+            }
+        </script>
+    </body>
+</html>

@@ -2,17 +2,143 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>test</title>
+        <title>The Friends</title>
+        <style>
+            table {
+                width: 100%;
+            }
+            table, th, td {
+                border: 1px solid black;
+                border-collapse: collapse;
+            }
+            th, td {
+                width: inherit;
+            }
+            input {
+                width: 100%;
+                padding: 0px;
+                margin: 0px;
+                border: none;
+                box-sizing: border-box;
+                font-size: 14px;
+            }
+        </style>
     </head>
     <body>
-        <p><button onclick="changePoints(1)">+1</button></p>
-        <p id="points">0</p>
-       
         <script>
-            function changePoints(n) {
-                var pointsEl = document.getElementbyId("points");
-                pointsEl.innerHTML = parseInt(pointsEl.value) + n;
+            var nbFriends = 73;
+            var categories = [{name : "Name", type : "text", appearence : "show"},
+                              {name : "Height", type : "number", min : 0, max : 100, appearence : "hide", options : []},
+                              {name : "Width", type : "number", min : 0, max : 100, appearence : "hide",},
+                              {name : "Gender", type : "text", appearence : "hide", options : ["Male", "Female", "Other"]},
+                              {name : "Handedness", type : "text", appearence : "hide", options : ["Righty", "Lefty", "Ambidextrous", "None"]},
+                              {name : "Attack", type : "number", min : 0, max : 100, appearence : "show"},
+                              {name : "Defense", type : "number", min : 0, max : 100, appearence : "show"},
+                              {name : "Speed", type : "number", min : 0, max : 100, appearence : "show"},
+                              {name : "Health", type : "number", min : 0, max : 100, appearence : "show"},
+                              {name : "Magic", type : "number", min : 0, max : 100, appearence : "show"},
+                              {name : "Strength", type : "number", min : 0, max : 100, appearence : "show"},
+                              {name : "Intelligence", type : "number", min : 0, max : 100, appearence : "show"},
+                              {name : "Combo Damage", type : "number", min : 0, max : 100, appearence : "show"},
+                              {name : "Agility", type : "number", min : 0, max : 100, appearence : "show"},
+                              {name : "Eyesight", type : "number", min : 0, max : 100, appearence : "hide"}
+                              ];
+            
+            var datalists = [];
+            for (var i = 0; i < categories.length; i++) {
+                if (categories[i]["options"]) {
+                    datalists[i] = document.createElement('datalist');
+                    datalists[i].id = categories[i]["name"] + "-datalist";
+                    categories[i]["options"].forEach(function(data) {
+                      var option = document.createElement('option');
+                      option.value = data;
+                      datalists[i].appendChild(option);
+                    });
+                }
             }
+            
+            if (localStorage.getItem("items") === null) {
+                var items = [];
+                for (var row = 0; row < nbFriends; row++) {
+                    items[row] = [];
+                    for (var col = 0; col < categories.length; col++) {
+                        items[row][col] = null;
+                    }
+                }
+            } else {
+                var items = JSON.parse(localStorage.getItem("items"));
+            }
+            
+            var body = document.getElementsByTagName('body')[0];
+            var tbl = document.createElement('table');
+            
+            var thd = document.createElement('thead');
+            var tr = document.createElement('tr');
+            tr.appendChild(document.createElement('th').appendChild(document.createTextNode("ID")).parentNode);
+            for (var col = 0; col < categories.length; col++) {
+                tr.appendChild(document.createElement('th').appendChild(document.createTextNode(categories[col]["name"])).parentNode);
+            }
+            thd.appendChild(tr);
+            tbl.appendChild(thd);
+            //create table (categories.length * nbFriends) and then add table var info (table.length * table[0].length)
+            var tbdy = document.createElement('tbody');
+            for (var row = 0; row < nbFriends; row++) {
+                var tr = document.createElement('tr');
+                tr.appendChild(document.createElement('td').appendChild(document.createTextNode(row  + 1)).parentNode);
+                for (var col = 0; col < categories.length; col++) {
+                    var td = document.createElement('td');
+                    //var input = document.createElement('input');
+                    const i = row;
+                    const j = col;
+                    /*input*/td.id = row * categories.length + col;
+                    try {
+                       /*input*/td.innerHTML/*value*/ = items[i][j];
+                    } catch {}
+                    //input.readOnly = true;
+                    //td.appendChild(input);
+                    tr.appendChild(td);
+                }
+                tbdy.appendChild(tr);
+            }
+            tbl.appendChild(tbdy);
+            body.appendChild(tbl);
+        </script>
+        
+        <p><button onclick="edit()">Edit table</button></p>
+        <p><button onclick="save()">Save table</button></p>
+        <p><button onclick="erase()">Erase table</button></p>
+        
+        <script>
+            function edit() {
+                var itemEls = document.getElementsByTagName("input");
+                for (var i = 0; i < itemEls.length; i++) {
+                    itemEls[i].readOnly = false;
+                    itemEls[i].type = categories[itemEls[i].id % categories.length]["type"];
+                    itemEls[i].min = categories[itemEls[i].id % categories.length]["min"];
+                    itemEls[i].max = categories[itemEls[i].id % categories.length]["max"];
+                    if (categories[itemEls[i].id % categories.length]["options"]) {
+                        itemEls[i].appendChild(datalists[itemEls[i].id % categories.length]);
+                        itemEls[i].setAttribute("list", categories[itemEls[i].id % categories.length]["name"] + "-datalist");
+                    }
+                }
+            }
+            
+            function save() {
+                for (var row = 0; row < nbFriends; row++) {
+                    for (var col = 0; col < categories.length; col++) {
+                        if (col != 0) {
+                            items[row][col] = document.getElementById(row * categories.length + col).value;
+                        }
+                    }
+                }
+                localStorage.setItem("items", JSON.stringify(items));
+                console.log(items);
+            }
+            
+            function erase () {
+                localStorage.clear();
+            }
+            
         </script>
     </body>
 </html>
